@@ -33,6 +33,7 @@ def manage_client(con, addr):
     
     connected = True
     client_name = str(addr)
+    msg = ''
     
     while connected:
         try:
@@ -40,23 +41,23 @@ def manage_client(con, addr):
         except:
             msg = '###########'
         
-        if msg_len:
+        if msg != '###########':
             msg_len = int(msg_len)
             msg = con.recv(msg_len).decode(FORMAT)
         
-            if msg == DISCONNECT:
-                connected = False
-                print(f'{client_name} Kilépett!')
-                broadcast(f'{client_name} kilépett a chatből', con)
-            
-            elif '#NAME# ' in msg:
+            if '#NAME# ' in msg:
                 client_name = msg.replace('#NAME# ', '')
                 client_names[con] = client_name
                 broadcast(f'{client_name} csatlakozott a chathez', con)
             
             else:
                 print(f'{client_name}: {msg}')
-                broadcast(f'{client_name}: {msg}', con)
+                broadcast(f'\n{client_name}: {msg}', con)
+        
+        else:
+            connected = False
+            print(f'{client_name} Kilépett!')
+            broadcast(f'\n {client_name} kilépett a chatből', con)
     
     if con in clients:
         clients.remove(con)
